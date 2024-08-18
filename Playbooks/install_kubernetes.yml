@@ -1,0 +1,21 @@
+#Used to install kubernetes
+- hosts: "*"
+  become: yes
+  tasks:
+    - name: Install packages needed to use the Kubernetes apt repository
+      shell: apt-get install -y apt-transport-https ca-certificates curl gpg
+
+    - name: Download the public signing key for the Kubernetes package repositories
+      shell: curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+    - name: Add the appropriate Kubernetes apt repository
+      shell: echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | tee /etc/apt/sources.list.d/kubernetes.list
+
+    - name: Update apt sources
+      shell: apt-get update
+
+    - name: Install kubelet
+      shell: apt-get install -y kubeadm kubectl kubelet
+
+    - name: Hold kubelet from upgrading with system upgrades
+      shell: apt-mark hold kubeadm kubectl kubelet

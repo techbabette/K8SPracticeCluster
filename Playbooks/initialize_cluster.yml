@@ -1,0 +1,12 @@
+#Used to initialize the cluster
+- hosts: "*"
+  become: yes
+  tasks:
+    - name: Initialize cluster
+      shell: kubeadm init --cri-socket=unix:///var/run/cri-dockerd.sock --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.56.11
+
+    - name: Create kubernetes config in vagrant home directory
+      shell: mkdir -p /home/vagrant/.kube
+
+    - name: Copy kubernetes config to vagrant home
+      shell: cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config && chown vagrant:vagrant /home/vagrant/.kube/config
