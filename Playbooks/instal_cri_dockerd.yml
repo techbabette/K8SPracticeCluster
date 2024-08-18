@@ -1,0 +1,9 @@
+#Used to install cri docker
+- hosts: "*"
+  become: yes
+  tasks:
+    - name: Download cri docker deb package
+      shell: wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.15/cri-dockerd_0.3.15.3-0.ubuntu-focal_amd64.deb -O cri.deb
+
+    - name: Add Docker's official GPG key Part 2
+      shell: apt -y install ./cri.deb

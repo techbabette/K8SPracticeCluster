@@ -1,0 +1,22 @@
+#Used to install docker daemon
+- hosts: "*"
+  become: yes
+  tasks:
+    - name: Add Docker's official GPG key Part 1
+      shell: apt-get update && apt-get install ca-certificates curl && install -m 0755 -d /etc/apt/keyrings
+
+    - name: Add Docker's official GPG key Part 2
+      shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && chmod a+r /etc/apt/keyrings/docker.asc
+
+    - name: Add the docker repository to Apt sources
+      shell: |
+          sudo echo \
+          "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+          $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+          sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    - name: Update apt sources
+      shell: apt-get update
+
+    - name: Install docker
+      shell: yes | sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
