@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
     end
 
     config.vm.define "main_node", primary: true do |main_node|
-        main_node.vm.network "private_network", ip: "192.168.56.11"
+        main_node.vm.network "private_network", ip: "192.168.56.2"
         config.vm.provision "install_docker", type: "ansible" do |ansible|
             ansible.playbook = "Playbooks/install_docker_daemon.yml"
         end
@@ -33,19 +33,21 @@ Vagrant.configure("2") do |config|
         end
     end
 
-    config.vm.define "worker_1" do |worker_1|
-        worker_1.vm.network "private_network", ip: "192.168.56.12"
-        worker_1.vm.hostname = "worker1"
-        config.vm.provision "install_docker", type: "ansible" do |ansible|
-            ansible.playbook = "Playbooks/install_docker_daemon.yml"
-        end
-    
-        config.vm.provision "install_cri", type: "ansible" do |ansible|
-            ansible.playbook = "Playbooks/instal_cri_dockerd.yml"
-        end
-    
-        config.vm.provision "install_kubernetes", type: "ansible" do |ansible|
-            ansible.playbook = "Playbooks/install_kubernetes.yml"
+    (1..1).each do |i|
+        config.vm.define "worker_#{i}" do |worker|
+            worker.vm.network "private_network", ip: "192.168.56.#{i + 2}"
+            worker.vm.hostname = "worker#{i}"
+            config.vm.provision "install_docker", type: "ansible" do |ansible|
+                ansible.playbook = "Playbooks/install_docker_daemon.yml"
+            end
+        
+            config.vm.provision "install_cri", type: "ansible" do |ansible|
+                ansible.playbook = "Playbooks/instal_cri_dockerd.yml"
+            end
+        
+            config.vm.provision "install_kubernetes", type: "ansible" do |ansible|
+                ansible.playbook = "Playbooks/install_kubernetes.yml"
+            end
         end
     end
 end
